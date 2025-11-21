@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BENJAMIN ANNICK CHIZITERE 
+    Stack (Array) — Visual Demo</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa4b2; --accent:#6ee7b7; --accent-2:#60a5fa; --danger:#fb7185;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#071026 0%, #071a2a 60%);color:#e6eef6;display:flex;align-items:center;justify-content:center;padding:28px}
+    .container{width:980px;max-width:95%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:20px;box-shadow:0 8px 30px rgba(2,6,23,0.7);border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px;font-size:20px}
+    p.lead{margin:0 0 18px;color:var(--muted);font-size:13px}
+
+    .controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+    .card{background:var(--card);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);min-width:260px}
+
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input[type="number"], input[type="text"]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit}
+
+    .row{display:flex;gap:12px}
+    button{padding:10px 12px;border-radius:8px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#04263b;font-weight:600;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    button.warn{background:linear-gradient(90deg,#fb7185,#f97316);color:white}
+
+    .stack-area{display:flex;gap:18px;align-items:flex-start}
+    .stack-visual{width:320px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:18px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .stack-list{display:flex;flex-direction:column-reverse;gap:10px;align-items:center;min-height:220px;padding:12px}
+    .slot{width:240px;height:44px;border-radius:8px;border:1px dashed rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.01);color:var(--muted);position:relative;transition:all .22s ease}
+    .slot.filled{background:rgba(255,255,255,0.03);color:#dcfdf0;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    .slot.top::after{content:'TOP';position:absolute;right:10px;top:-10px;background:var(--accent-2);color:#04263b;padding:4px 6px;border-radius:6px;font-size:11px;font-weight:700}
+
+    .info{flex:1;min-width:300px}
+    .info .box{background:var(--glass);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);color:var(--muted);margin-bottom:10px}
+    .message{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);color:var(--muted);min-height:40px}
+
+    .small{font-size:12px;color:var(--muted)}
+    .meta{display:flex;gap:8px;align-items:center}
+
+    .bottom-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+    footer{margin-top:14px;color:var(--muted);font-size:12px}
+
+    @media (max-width:760px){.stack-area{flex-direction:column}.stack-visual{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Stack (Array) — Interactive Visualizer by BENJAMIN ANNICK CHIZITERE VUG/CSC/23/8817</h1>
+    <p class="lead">This demo uses a fixed-size JavaScript array behind the scenes. Use the controls to Push, Pop, Peek, check Top, IsFull and IsEmpty. The stack is shown from bottom to top.</p>
+
+    <div class="controls">
+      <div class="card">
+        <label for="sizeInput">Stack capacity (size)</label>
+        <input id="sizeInput" type="number" min="1" value="6" />
+        <div style="height:10px"></div>
+        <button id="initBtn">Initialize Stack</button>
+      </div>
+
+      <div class="card" style="flex:1">
+        <label for="pushInput">Value to push</label>
+        <input id="pushInput" type="text" placeholder="Enter value and press Push or Enter" />
+        <div style="height:10px"></div>
+        <div class="row">
+          <button id="pushBtn">Push</button>
+          <button id="popBtn" class="ghost">Pop</button>
+          <button id="peekBtn" class="ghost">Peek/Top</button>
+          <button id="isEmptyBtn" class="ghost">isEmpty</button>
+        </div>
+        <div class="row">
+          <button id="isFullBtn" class="ghost">isFull</button>
+          <button id="emptyBtn" class="warn">Empty Stack</button>
+        </div>
+      </div>
+
+      <div class="card info">
+        <div class="box meta">
+          <div><strong>Top index:</strong> <span id="topIndex">-1</span></div>
+          <div style="width:18px"></div>
+          <div><strong>Capacity:</strong> <span id="capacity">6</span></div>
+          <div style="width:18px"></div>
+          <div><strong>Count:</strong> <span id="count">0</span></div>
+        </div>
+        <div class="box message" id="message">Ready — initialize stack or use default capacity.</div>
+        <div class="small">Keyboard: focus the value input and press Enter to Push.</div>
+      </div>
+    </div>
+
+    <!-- Only the visual stack remains -->
+    <div class="stack-area">
+      <div class="stack-visual card">
+        <label class="small">Stack (bottom to top)</label>
+        <div class="stack-list" id="stackList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    class VisualStack {
+      constructor(capacity = 6){ this.init(capacity); }
+
+      init(capacity){
+        this.capacity = Math.max(1, Math.floor(capacity));
+        this.array = new Array(this.capacity).fill(null);
+        this.top = -1;
+        this.render();
+        this._setMessage(`Initialized stack with capacity ${this.capacity}`);
+        this._updateMeta();
+      }
+
+      isEmpty(){ return this.top === -1; }
+      isFull(){ return this.top === this.capacity - 1; }
+
+      push(item){
+        if(this.isFull()){ this._setMessage('Stack is FULL', true); return false; }
+        this.top += 1;
+        this.array[this.top] = item;
+        this._setMessage(`Pushed "${item}"`);
+        this.render();
+        this._updateMeta();
+        return true;
+      }
+
+      pop(){
+        if(this.isEmpty()){ this._setMessage('Stack is EMPTY', true); return null; }
+        const val = this.array[this.top];
+        this.array[this.top] = null;
+        this.top -= 1;
+        this._setMessage(`Popped "${val}"`);
+        this.render();
+        this._updateMeta();
+        return val;
+      }
+
+      peek(){
+        if(this.isEmpty()){ this._setMessage('Stack is EMPTY', true); return null; }
+        this._setMessage(`Top element is "${this.array[this.top]}"`);
+        return this.array[this.top];
+      }
+
+      emptyStack(){
+        this.array = new Array(this.capacity).fill(null);
+        this.top = -1;
+        this._setMessage('Stack emptied');
+        this.render();
+        this._updateMeta();
+      }
+
+      render(){
+        const container = document.getElementById('stackList');
+        container.innerHTML = '';
+        for(let i = 0; i < this.capacity; i++){
+          const slot = document.createElement('div');
+          slot.className = 'slot';
+          const val = this.array[i];
+          if(val !== null){
+            slot.classList.add('filled');
+            slot.textContent = val;
+          } else {
+            slot.textContent = '(empty)';
+          }
+          if(i === this.top) slot.classList.add('top');
+          container.appendChild(slot);
+        }
+      }
+
+      _updateMeta(){
+        document.getElementById('topIndex').textContent = this.top;
+        document.getElementById('capacity').textContent = this.capacity;
+        document.getElementById('count').textContent = this.top + 1;
+      }
+
+      _setMessage(msg, isError=false){
+        const m = document.getElementById('message');
+        m.textContent = msg;
+        m.style.color = isError ? 'var(--danger)' : 'var(--muted)';
+      }
+    }
+
+    const stack = new VisualStack(parseInt(document.getElementById('sizeInput').value,10)||6);
+
+    document.getElementById('initBtn').addEventListener('click',()=>{
+      const size = parseInt(document.getElementById('sizeInput').value,10)||6;
+      stack.init(size);
+    });
+
+    const pushInput = document.getElementById('pushInput');
+    document.getElementById('pushBtn').addEventListener('click',()=>{
+      const v = pushInput.value.trim();
+      if(v===''){ stack._setMessage('Please enter a value to push.', true); return; }
+      stack.push(v);
+      pushInput.value=''; 
+      pushInput.focus();
+    });
+
+    document.getElementById('popBtn').addEventListener('click',()=>stack.pop());
+    document.getElementById('peekBtn').addEventListener('click',()=>stack.peek());
+    document.getElementById('emptyBtn').addEventListener('click',()=>stack.emptyStack());
+
+    document.getElementById('isEmptyBtn').addEventListener('click',()=>{
+      stack._setMessage(stack.isEmpty() ? 'TRUE — Stack is empty.' : 'FALSE — Stack has elements.');
+    });
+
+    document.getElementById('isFullBtn').addEventListener('click',()=>{
+      stack._setMessage(stack.isFull() ? 'TRUE — Stack is full.' : 'FALSE — Stack is not full.');
+    });
+
+    pushInput.addEventListener('keydown',(e)=>{
+      if(e.key==='Enter'){
+        e.preventDefault();
+        document.getElementById('pushBtn').click();
+      }
+    });
+
+    stack.render();
+  </script>
+</body>
+</html>
